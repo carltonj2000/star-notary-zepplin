@@ -1,0 +1,202 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Star Notary</title>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+  </head>
+  <body>
+    <div>
+      <h1>Star Notary</h1>
+
+      <hr />
+      <select id="networks">
+        <option value="ganacheGui">Ganache GUI</option>
+        <option value="rinkeby">Rinkeby</option>
+      </select>
+      <label for="network">Network</label>
+
+      <hr />
+      <select id="accounts">
+        <option value="0">tbd</option>
+        <option value="1">tbd</option>
+        <option value="2">tbd</option>
+      </select>
+      <label for="accounts">Accounts</label>
+
+      <hr />
+      <input
+        id="caddress"
+        type="text"
+        value="0x8e8f5e48cF51F113C2445E5222B888bbbf7c2816"
+      />
+      <label for="caddress">Contract Address</label>
+      <button id="loadcontract">Load Contract</button>
+
+      <hr />
+
+      <input id="name" type="text" value="1" /><label for="name">name</label>
+      <br />
+      <input id="story" type="text" value="1" />
+      <label for="story">story</label> <br />
+      <input id="ra" type="text" value="1" /><label for="ra">ra</label> <br />
+      <input id="dec" type="text" value="1" /><label for="dec">dec</label>
+      <br />
+      <input id="mag" type="text" value="1" /><label for="mag">mag</label>
+      <br />
+      <input id="id" type="text" value="1" /> <label for="id"><b>id</b></label>
+      <br />
+
+      <button id="create">Claim A New Star</button><br />
+      <button id="find">Find Star By ID</button><br />
+      <button id="clear">Clear Star Information Below</button><br />
+      <div id="starinfo">tbd</div>
+      <input id="price" type="text" value="1" /><label for="price">Price</label>
+      <br />
+
+      <button id="sell">Put Star For Sale</button><br />
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <script>
+      // Connect a the web3 provider
+      if (typeof web3 !== "undefined") {
+        web3 = new Web3(web3.currentProvider);
+      } else {
+        web3 = new Web3(
+          new Web3.providers.HttpProvider("http://localhost:7545")
+        );
+      }
+      web3.eth.defaultAccount = web3.eth.accounts[0];
+
+      let accountIndex = -1;
+      let contractLoaded = false;
+      let contract = null;
+      const caddress = $("#caddress");
+      const name = $("#name");
+      const story = $("#story");
+      const ra = $("#ra");
+      const dec = $("#dec");
+      const mag = $("#mag");
+      const id = $("#id");
+      const starinfo = $("#starinfo");
+      const loadcontract = $("#loadcontract");
+      const price = $("#price");
+      const account = $("#accounts option:selected");
+      const network = $("#networks option:selected");
+
+      function loadContract() {
+        fetch("StarNotary.json")
+          .then(response => response.json())
+          .then(StarInfo => {
+            const contractInfo = web3.eth.contract(StarInfo.abi);
+            if (!isValidVal([caddress]))
+              return console.error("contract address not valid");
+            contract = contractInfo.at(caddress.val());
+            contractLoaded = true;
+          })
+          .catch(console.error);
+      }
+      loadContract();
+      $("#loadcontract").click(function() {
+        loadContract();
+      });
+
+      $("#create").click(function() {
+        console.log("create");
+        if (!contractLoaded) return alert("contract not loaded yet.");
+        if (!contract) return alert("contract variable not set.");
+        if (!isValidVal([name, story, ra, dec, mag, id]))
+          return alert("star data not valid");
+
+        contract.createStar(
+          name.val(),
+          story.val(),
+          ra.val(),
+          dec.val(),
+          mag.val(),
+          id.val(),
+          { from: web3.eth.accounts[0] },
+          function(error, result) {
+            if (error) return console.error("error", error);
+            console.log("result createStar", result);
+          }
+        );
+      });
+
+      $("#clear").click(function() {
+        console.log("clear");
+        starinfo.text("tbd");
+      });
+
+      $("#find").click(function() {
+        console.log("find");
+        if (!contractLoaded) return alert("contract not loaded yet.");
+        if (!contract) return alert("contract variable not set.");
+        if (!isValidVal([id])) return alert("star data not valid");
+
+        contract.starIdToStarInfo(
+          id.val(),
+          { from: web3.eth.accounts[0] },
+          function(error, result) {
+            if (error) return console.error("error", error);
+            console.log("result from find/search", result);
+            if (!isValid(result)) return starinfo.text("Star Not Found");
+            starinfo.text(result);
+          }
+        );
+      });
+
+      $("#sell").click(function() {
+        console.log("sell");
+        if (!contractLoaded) return alert("contract not loaded yet.");
+        if (!contract) return alert("contract variable not set.");
+        if (!isValidVal([price, id]))
+          return alert("star price or id is not valid");
+
+        contract.putStarUpForSale(
+          id.val(),
+          price.val(),
+          { from: web3.eth.accounts[0] },
+          function(error, result) {
+            if (error) return console.error("error", error);
+            console.log("result from sale listing", result);
+          }
+        );
+      });
+
+      function loadAccounts() {
+        /* i know not ideal */
+        fetch("secrets.json")
+          .then(response => response.json())
+          .then(secrets => {
+            if (!secrets || secrets[network.val()].accounts.length < 3)
+              return console.error("Setting up accounts failed");
+            const accs = secrets[network.val()].accounts;
+            for (j = 0; j < 3; j++) {
+              $(`#accounts option[value="${j}"]`).text(accs[j].address);
+            }
+          })
+          .catch(console.error);
+      }
+      loadAccounts();
+
+      function isValidVal(data) {
+        const out = [];
+        for (i = 0; i < data.length; i++) {
+          out.push(data[i].val());
+        }
+        return isValid(out);
+      }
+      function isValid(data) {
+        if (!data.length) return false;
+        for (i = 0; i < data.length; i++) {
+          if (data[i].length === 0) return false;
+        }
+        return true;
+      }
+    </script>
+  </body>
+</html>

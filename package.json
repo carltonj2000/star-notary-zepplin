@@ -1,0 +1,22 @@
+{
+  "name": "star-notary-zepplin",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "ganache-cli --mnemonic 'trick core barely fold sample icon display hollow smoke task emotion pepper'",
+    "compile": "truffle compile",
+    "test": "truffle test",
+    "migrate:ganache": "truffle migrate --compile-all --reset --network ganache",
+    "migrate:rinkeby": "truffle migrate --compile-all --reset --network rinkeby",
+    "serve": "lite-server"
+  },
+  "dependencies": {
+    "minimist": "^1.2.0",
+    "openzeppelin-solidity": "2.0.0-rc.3",
+    "web3": "^1.0.0-beta.36"
+  },
+  "devDependencies": {
+    "lite-server": "^2.4.0"
+  }
+}
