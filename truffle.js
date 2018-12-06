@@ -12,6 +12,7 @@
  *   },
  */
 const secrets = require("./secrets.js");
+const HDWalletProvider = require("truffle-hdwallet-provider");
 
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
@@ -23,8 +24,15 @@ module.exports = {
       network_id: "*" // Match any network id
     },
     rinkeby: {
-      host: secrets.rinkeby.rpcServer,
-      network_id: "*" // Match any network id
+      provider: function() {
+        return new HDWalletProvider(
+          secrets.rinkeby.secrets,
+          secrets.rinkeby.rpcServer
+        );
+      },
+      network_id: "4", // Rinkeby ID 4
+      gas: 4500000,
+      gasPrice: 10000000000
     }
   }
 };

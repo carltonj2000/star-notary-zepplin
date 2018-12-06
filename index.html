@@ -5,6 +5,25 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Star Notary</title>
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+    <style>
+      #starowner,
+      #starinfo {
+        width: 150px;
+        display: inline-block;
+        border: 1px solid lightgray;
+        margin: 2px;
+      }
+      input {
+        width: 150px;
+        margin: 2px;
+      }
+      select {
+        margin: 2px 0px;
+      }
+      #id {
+        font-weight: bold;
+      }
+    </style>
   </head>
   <body>
     <div>
@@ -17,45 +36,50 @@
       </select>
       <label for="network">Network</label>
 
-      <hr />
-      <select id="accounts">
-        <option value="0">tbd</option>
-        <option value="1">tbd</option>
-        <option value="2">tbd</option>
-      </select>
-      <label for="accounts">Accounts</label>
-
-      <hr />
+      <br />
       <input
         id="caddress"
         type="text"
-        value="0x8e8f5e48cF51F113C2445E5222B888bbbf7c2816"
+        value="0x3a228E459F701335a0a1DC5e6541aF12E016A1d6"
       />
       <label for="caddress">Contract Address</label>
       <button id="loadcontract">Load Contract</button>
-
       <hr />
 
-      <input id="name" type="text" value="1" /><label for="name">name</label>
+      <input id="name" type="text" value="1" /> <label for="name">name</label>
       <br />
+
       <input id="story" type="text" value="1" />
       <label for="story">story</label> <br />
-      <input id="ra" type="text" value="1" /><label for="ra">ra</label> <br />
-      <input id="dec" type="text" value="1" /><label for="dec">dec</label>
-      <br />
-      <input id="mag" type="text" value="1" /><label for="mag">mag</label>
-      <br />
-      <input id="id" type="text" value="1" /> <label for="id"><b>id</b></label>
+
+      <input id="ra" type="text" value="1" /> <label for="ra">ra</label> <br />
+
+      <input id="dec" type="text" value="1" /> <label for="dec">dec</label>
       <br />
 
-      <button id="create">Claim A New Star</button><br />
-      <button id="find">Find Star By ID</button><br />
-      <button id="clear">Clear Star Information Below</button><br />
-      <div id="starinfo">tbd</div>
-      <input id="price" type="text" value="1" /><label for="price">Price</label>
+      <input id="mag" type="text" value="1" /> <label for="mag">mag</label>
       <br />
 
-      <button id="sell">Put Star For Sale</button><br />
+      <input id="id" type="text" value="1" /> <label for="id"><b>ID</b></label>
+      <button id="create">Claim A New Star</button> <br />
+
+      <span id="starinfo">tbd</span>
+      <label for="starinfo"><em>Info</em></label>
+      <button id="find">Find By <b>ID</b></button>
+      <button id="clearinfo">Clear</button> <br />
+
+      <input id="starowner" value="tbd" />
+      <label for="starowner"><em>Owner</em></label>
+      <button id="getowner">Get By <b>ID</b></button>
+      <button id="clearowner">Clear</button> <br />
+
+      <input id="sellprice" type="text" value="1" />
+      <label for="sellprice"><em>Sell Price (Ether)</em></label>
+      <button id="sell">Put For Sale</button> <br />
+
+      <input id="buyprice" type="text" value="1" />
+      <label for="buyprice"><em>Buy Price (Ether)</em></label>
+      <button id="buy">Buy</button> <br />
     </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
@@ -82,10 +106,11 @@
       const mag = $("#mag");
       const id = $("#id");
       const starinfo = $("#starinfo");
+      const starowner = $("#starowner");
       const loadcontract = $("#loadcontract");
-      const price = $("#price");
-      const account = $("#accounts option:selected");
+      const sellprice = $("#sellprice");
       const network = $("#networks option:selected");
+      const owner = $("#owner");
 
       function loadContract() {
         fetch("StarNotary.json")
@@ -105,12 +130,10 @@
       });
 
       $("#create").click(function() {
-        console.log("create");
         if (!contractLoaded) return alert("contract not loaded yet.");
         if (!contract) return alert("contract variable not set.");
         if (!isValidVal([name, story, ra, dec, mag, id]))
           return alert("star data not valid");
-
         contract.createStar(
           name.val(),
           story.val(),
@@ -118,7 +141,6 @@
           dec.val(),
           mag.val(),
           id.val(),
-          { from: web3.eth.accounts[0] },
           function(error, result) {
             if (error) return console.error("error", error);
             console.log("result createStar", result);
@@ -126,13 +148,11 @@
         );
       });
 
-      $("#clear").click(function() {
-        console.log("clear");
+      $("#clearinfo").click(function() {
         starinfo.text("tbd");
       });
 
       $("#find").click(function() {
-        console.log("find");
         if (!contractLoaded) return alert("contract not loaded yet.");
         if (!contract) return alert("contract variable not set.");
         if (!isValidVal([id])) return alert("star data not valid");
@@ -150,15 +170,14 @@
       });
 
       $("#sell").click(function() {
-        console.log("sell");
         if (!contractLoaded) return alert("contract not loaded yet.");
         if (!contract) return alert("contract variable not set.");
-        if (!isValidVal([price, id]))
-          return alert("star price or id is not valid");
+        if (!isValidVal([sellprice, id]))
+          return alert("star sell price or id is not valid");
 
         contract.putStarUpForSale(
           id.val(),
-          price.val(),
+          sellprice.val(),
           { from: web3.eth.accounts[0] },
           function(error, result) {
             if (error) return console.error("error", error);
@@ -167,21 +186,24 @@
         );
       });
 
-      function loadAccounts() {
-        /* i know not ideal */
-        fetch("secrets.json")
-          .then(response => response.json())
-          .then(secrets => {
-            if (!secrets || secrets[network.val()].accounts.length < 3)
-              return console.error("Setting up accounts failed");
-            const accs = secrets[network.val()].accounts;
-            for (j = 0; j < 3; j++) {
-              $(`#accounts option[value="${j}"]`).text(accs[j].address);
-            }
-          })
-          .catch(console.error);
-      }
-      loadAccounts();
+      $("#getowner").click(function() {
+        if (!contractLoaded) return alert("contract not loaded yet.");
+        if (!contract) return alert("contract variable not set.");
+        if (!isValidVal([id])) return alert("star data not valid");
+
+        contract.ownerOf(id.val(), function(error, result) {
+          if (error) {
+            return console.error("get owner", error);
+            starowner.val("None Found");
+          }
+          console.log("result from get owner for id", id.val(), "is", result);
+          if (!isValid(result)) return owner.text("Star Not Found");
+          starowner.val(result);
+        });
+      });
+      $("#clearowner").click(function() {
+        starowner.val("tbd");
+      });
 
       function isValidVal(data) {
         const out = [];

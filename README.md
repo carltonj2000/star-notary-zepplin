@@ -24,10 +24,11 @@ In order to verify the code do the following.
 - to run the `StarNotary` contract execute the following on the command line
   - `npm install` to install dependencies
   - update `truffle.js` or `truffle.config.js` with your network information
-  - `npm migrate:ganache` to deploy contract to ganache (note contract address)
-  - `npm migrate:rinkeby` to deploy contract to rinkeby (note contract address)
+  - `npm run migrate:ganache` to deploy contract to ganache (note contract address)
+  - `npm run migrate:rinkeby` to deploy contract to rinkeby (note contract address)
+  - `npm run cp:api` to copy the JSON
   - during development VSCode `live server` was used to serve the GUI
-  - `npm server` will serve GUI in a web brower on port `8080`
+  - `npm run server` will serve GUI in a web brower on port `8080`
   - Use the web GUI to enter the contract address, create stars and find stars
 
 Note the `index*.js` file are an incomplete attempt to use `node` or `truffle`
