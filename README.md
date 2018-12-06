@@ -26,7 +26,7 @@ In order to verify the code do the following.
   - update `truffle.js` or `truffle.config.js` with your network information
   - `npm run migrate:ganache` to deploy contract to ganache (note contract address)
   - `npm run migrate:rinkeby` to deploy contract to rinkeby (note contract address)
-  - `npm run cp:api` to copy the JSON
+  - copy `./build/contracts/StarNotary.json` to the root directory
   - during development VSCode `live server` was used to serve the GUI
   - `npm run server` will serve GUI in a web brower on port `8080`
   - Use the web GUI to enter the contract address, create stars and find stars
