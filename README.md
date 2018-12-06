@@ -8,12 +8,12 @@ The code in this repository is for project 5 of the
 The `StarNotary` contract was deployed to the `rinkeby` network and a star
 was claimed. The related information follows.
 
-| Information      | Details |
-| ---------------- | ------- |
-| Contract Hash    | tbd     |
-| Contract Address | tbd     |
-| New Star Hash    | tbd     |
-| New Star ID      | 1       |
+| Information      | Details                                                            |
+| ---------------- | ------------------------------------------------------------------ |
+| Contract Hash    | 0x8a8ba5cde1f3ad1eaa4629e012a7839a736206f1512098fbdd7a74e0bb05a137 |
+| Contract Address | 0x45fd9be7bf2f4778ce74cd9a9ca723de4a90e99b                         |
+| New Star Hash    | 0x748c929718188ceca965b057ec30d66a447c7fd2f2a937c0fdc08c4a10e6c373 |
+| New Star ID      | 1                                                                  |
 
 In order to verify the code do the following.
 

@@ -28,15 +28,8 @@
   <body>
     <div>
       <h1>Star Notary</h1>
-
       <hr />
-      <select id="networks">
-        <option value="ganacheGui">Ganache GUI</option>
-        <option value="rinkeby">Rinkeby</option>
-      </select>
-      <label for="network">Network</label>
 
-      <br />
       <input
         id="caddress"
         type="text"
@@ -73,11 +66,11 @@
       <button id="getowner">Get By <b>ID</b></button>
       <button id="clearowner">Clear</button> <br />
 
-      <input id="sellprice" type="text" value="1" />
+      <input id="sellprice" type="text" value="0.1" />
       <label for="sellprice"><em>Sell Price (Ether)</em></label>
       <button id="sell">Put For Sale</button> <br />
 
-      <input id="buyprice" type="text" value="1" />
+      <input id="buyprice" type="text" value="0.1" />
       <label for="buyprice"><em>Buy Price (Ether)</em></label>
       <button id="buy">Buy</button> <br />
     </div>
@@ -95,7 +88,6 @@
       }
       web3.eth.defaultAccount = web3.eth.accounts[0];
 
-      let accountIndex = -1;
       let contractLoaded = false;
       let contract = null;
       const caddress = $("#caddress");
@@ -109,6 +101,7 @@
       const starowner = $("#starowner");
       const loadcontract = $("#loadcontract");
       const sellprice = $("#sellprice");
+      const buyprice = $("#sellprice");
       const network = $("#networks option:selected");
       const owner = $("#owner");
 
@@ -157,33 +150,12 @@
         if (!contract) return alert("contract variable not set.");
         if (!isValidVal([id])) return alert("star data not valid");
 
-        contract.starIdToStarInfo(
-          id.val(),
-          { from: web3.eth.accounts[0] },
-          function(error, result) {
-            if (error) return console.error("error", error);
-            console.log("result from find/search", result);
-            if (!isValid(result)) return starinfo.text("Star Not Found");
-            starinfo.text(result);
-          }
-        );
-      });
-
-      $("#sell").click(function() {
-        if (!contractLoaded) return alert("contract not loaded yet.");
-        if (!contract) return alert("contract variable not set.");
-        if (!isValidVal([sellprice, id]))
-          return alert("star sell price or id is not valid");
-
-        contract.putStarUpForSale(
-          id.val(),
-          sellprice.val(),
-          { from: web3.eth.accounts[0] },
-          function(error, result) {
-            if (error) return console.error("error", error);
-            console.log("result from sale listing", result);
-          }
-        );
+        contract.starIdToStarInfo(id.val(), function(error, result) {
+          if (error) return console.error("error", error);
+          console.log("result from find/search", result);
+          if (!isValid(result)) return starinfo.text("Star Not Found");
+          starinfo.text(result);
+        });
       });
 
       $("#getowner").click(function() {
@@ -203,6 +175,30 @@
       });
       $("#clearowner").click(function() {
         starowner.val("tbd");
+      });
+
+      $("#sell").click(function() {
+        if (!contractLoaded) return alert("contract not loaded yet.");
+        if (!contract) return alert("contract variable not set.");
+        if (!isValidVal([sellprice, id]))
+          return alert("star sell price or id is not valid");
+        const price = web3.toWei(sellprice.val(), "ether");
+        contract.putStarUpForSale(id.val(), price, function(error, result) {
+          if (error) return console.error("error", error);
+          console.log("result from sale listing", result);
+        });
+      });
+
+      $("#buy").click(function() {
+        if (!contractLoaded) return alert("contract not loaded yet.");
+        if (!contract) return alert("contract variable not set.");
+        if (!isValidVal([buyprice, id]))
+          return alert("star buy price or id is not valid");
+        const price = web3.toWei(buyprice.val(), "ether");
+        contract.buyStar(id.val(), { value: price }, function(error, result) {
+          if (error) return console.error("error", error);
+          console.log("result from purchase", result);
+        });
       });
 
       function isValidVal(data) {

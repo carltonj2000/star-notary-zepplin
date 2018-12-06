@@ -8,7 +8,7 @@
     "compile": "truffle compile",
     "test": "truffle test",
     "migrate:ganache": "truffle migrate --compile-all --reset --network ganache",
-    "migrate:rinkeby": "truffle migrate --compile-all --reset --network rinkeby",
+    "migrate:rinkeby": "truffle migrate --compile-all --reset -f 2 --network rinkeby",
     "serve": "lite-server"
   },
   "dependencies": {

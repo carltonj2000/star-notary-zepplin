@@ -26,7 +26,7 @@ module.exports = {
     rinkeby: {
       provider: function() {
         return new HDWalletProvider(
-          secrets.rinkeby.secrets,
+          secrets.rinkeby.mnemonic,
           secrets.rinkeby.rpcServer
         );
       },
