@@ -29,7 +29,7 @@ In order to verify the code do the following.
   - `npm run migrate:rinkeby` to deploy contract to rinkeby
   - copy `./build/contracts/StarNotary.json` to `./` if needed
   - during development VSCode `live server` was used to serve the GUI
-  - `npm run server` will serve GUI in a web brower on port `3000`
+  - `npm run server` will serve GUI in a web browser on port `3000`
   - Use the web GUI to enter the contract address, create stars and find stars
 
 Note the `./index*.js` file are an incomplete attempt to use `node` or `truffle`
