@@ -7,9 +7,10 @@
     "dev": "ganache-cli --mnemonic 'trick core barely fold sample icon display hollow smoke task emotion pepper'",
     "compile": "truffle compile",
     "test": "truffle test",
-    "migrate:ganache": "truffle migrate --compile-all --reset --network ganache",
+    "migrate:ganacheCli": "truffle migrate --compile-all --reset --network ganachecli",
+    "migrate:ganacheGui": "truffle migrate --compile-all --reset --network ganachegui",
     "migrate:rinkeby": "truffle migrate --compile-all --reset -f 2 --network rinkeby",
-    "serve": "lite-server"
+    "server": "lite-server"
   },
   "dependencies": {
     "minimist": "^1.2.0",

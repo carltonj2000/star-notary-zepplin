@@ -92,6 +92,13 @@ contract("ERC721Token", accounts => {
     it("emits the correct event", async function() {
       assert.equal(tx.logs[0].event, "Approval");
     });
+    it("user2 can now safe transfer", async function() {
+      await this.contract.safeTransferFrom(user1, user2, tokenId, {
+        from: user2
+      });
+
+      assert.equal(await this.contract.ownerOf(tokenId), user2);
+    });
   });
 
   describe("can set an operator", () => {
